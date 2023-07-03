@@ -1,6 +1,5 @@
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./Menu.module.css";
-import PlayBackSpeed from "../../../../icons/PlayBackSpeed";
 
 interface MenuProps {
 	name: string;

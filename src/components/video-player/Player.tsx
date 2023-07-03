@@ -259,14 +259,19 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 	};
 
 	const handleEnterFullScreen = () => {
+		//@ts-ignore
 		if (!playerRef.current) return;
 		if (playerRef.current.requestFullscreen) {
 			playerRef.current.requestFullscreen();
+			//@ts-ignore
 		} else if (playerRef.current?.mozRequestFullScreen) {
 			// Firefox
+			//@ts-ignore
 			playerRef.current.mozRequestFullScreen();
+			//@ts-ignore
 		} else if (playerRef.current.webkitRequestFullscreen) {
 			// Chrome, Safari, Opera
+			//@ts-ignore
 			playerRef.current.webkitRequestFullscreen();
 		}
 		setPlayerState((prev) => ({
@@ -276,7 +281,9 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 	};
 
 	const handleExitFullScreen = () => {
+		//@ts-ignore
 		const isFullscreen =
+			//@ts-ignore
 			document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
 		setPlayerState((prev) => ({
 			...prev,
@@ -378,9 +385,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				</div>
 			</div>
 			<aside className={styles.details__pane}>
-				<div>
-					
-				</div>
+				<div></div>
 			</aside>
 		</div>
 	);
