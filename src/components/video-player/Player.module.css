@@ -1,0 +1,127 @@
+.container {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	max-width: 1200px;
+	margin-inline: auto;
+	justify-content: center;
+	padding: 18px;
+}
+
+.container_video_player {
+	width: 100%;
+}
+
+.video_player__bottom {
+	background: #20222b;
+	/* opacity: 0; */
+	transition: all 0.4s ease-out;
+	/* padding: 14px 16px; */
+}
+
+.container:hover .video_player__bottom {
+	opacity: 1;
+	z-index: 10;
+}
+
+.video_player__controls {
+	display: flex;
+	column-gap: 4px;
+	align-items: center;
+	padding-inline: 8px;
+	padding-bottom: 12px;
+	justify-content: space-between;
+}
+
+.video_player__controls_col {
+	display: flex;
+	align-items: center;
+	column-gap: 12px;
+	flex-basis: 40%;
+}
+
+.video_player__controls_col.middle {
+	flex-basis: 20%;
+	justify-content: center;
+}
+
+.video_player__controls_col.right {
+	justify-content: flex-end;
+}
+
+.video_player__controls_play_btn {
+	padding: 0px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: transparent;
+	border: none;
+	outline: none !important;
+}
+
+.video_player__time_display {
+	display: flex;
+	align-items: center;
+	color: #fff;
+	font-weight: 400;
+	font-size: 14px;
+}
+
+.video_player__bottom_container {
+	display: flex;
+	flex-direction: column;
+	row-gap: 12px;
+}
+
+.video_player__progress_bar {
+	height: 5px;
+	background-color: #ffffff59;
+	width: 100%;
+	position: relative;
+}
+
+.video_player__progress_bar span {
+	position: absolute;
+	width: 0%;
+	height: 5px;
+	background-color: #5b53ff;
+	left: 0;
+}
+
+.video_player__seek_interaction_layer {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	height: 20px;
+	top: -10px;
+	z-index: 20;
+	cursor: pointer;
+}
+
+.player_control {
+	cursor: pointer;
+	opacity: 0.6;
+	transition: opacity 0.3s ease;
+}
+
+.player_control:hover,
+.player_control:focus {
+	opacity: 1;
+}
+
+.video_player__time_display__separator,
+.video_player__time_display__total_time {
+	opacity: 0.5;
+}
+
+.details__pane {
+	display: flex;
+	width: 390px;
+	background-color: #20222b;
+	flex-shrink: 0;
+	padding-block: 56px;
+}
+
+.video_metadata__container {
+	padding: 18px;
+}
