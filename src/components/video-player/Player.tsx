@@ -293,7 +293,11 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 
 	return (
 		<div className="video-parent__container">
-			<div className={styles.container} ref={playerContainerRef}>
+			<div
+				className={styles.container}
+				ref={playerContainerRef}
+				style={!playerState.isReady ? { visibility: "hidden" } : {}}
+			>
 				<video className={styles.container_video_player} ref={playerRef} src={src}></video>
 				<div className={styles.video_player__bottom}>
 					<div className={styles.video_player__bottom_container}>
