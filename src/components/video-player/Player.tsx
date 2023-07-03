@@ -349,6 +349,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 									onChange={handleVolumeChange}
 									className={styles.player_control}
 									value={playerState.volume * 10}
+									title="Volume"
 								/>
 							</div>
 							<div className={`${styles.video_player__controls_col} ${styles.middle}`}>
@@ -376,6 +377,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 								<span
 									className={`${styles.video_player__controls_fullscreen} ${styles.player_control}`}
 									onClick={handleEnterFullScreen}
+									title="Fullscreen"
 								>
 									{playerState.fullscreen ? (
 										<FullscreenExit width="32" height="32" color="#fff" />
