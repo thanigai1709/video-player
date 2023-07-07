@@ -5,6 +5,8 @@ import Pause from "../../icons/Pause";
 import Fullscreen from "../../icons/Fullscreen";
 import FullscreenExit from "../../icons/FullscreenExit";
 import Menu from "./components/Menu/Menu";
+import Annotator from "./components/Annotator/Annotator";
+import { formatTime } from "../../utils";
 
 interface PlayerProps {
 	src: string;
@@ -161,26 +163,30 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 	};
 
 	const handleKeyBoardMacros = (e: KeyboardEvent) => {
-		console.log(e);
-		switch (e.code) {
-			case "Space":
-				handlePlayPause();
-				break;
-			case "ArrowRight":
-				handleForward(5);
-				break;
-			case "ArrowLeft":
-				handleBackward(5);
-				break;
-			case "ArrowUp":
-				handleVolumeUpDown(0.05, "+");
-				break;
-			case "ArrowDown":
-				handleVolumeUpDown(0.05, "-");
-				break;
-			case "KeyK":
-				handlePlayPause();
-				break;
+		//@ts-ignore
+		let targetElement: HTMLElement = e.target;
+		console.log(targetElement.tagName, "name");
+		if (targetElement.tagName === "BODY") {
+			switch (e.code) {
+				case "Space":
+					handlePlayPause();
+					break;
+				case "ArrowRight":
+					handleForward(5);
+					break;
+				case "ArrowLeft":
+					handleBackward(5);
+					break;
+				case "ArrowUp":
+					handleVolumeUpDown(0.05, "+");
+					break;
+				case "ArrowDown":
+					handleVolumeUpDown(0.05, "-");
+					break;
+				case "KeyK":
+					handlePlayPause();
+					break;
+			}
 		}
 	};
 
@@ -298,97 +304,100 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				ref={playerContainerRef}
 				style={!playerState.isReady ? { visibility: "hidden" } : {}}
 			>
-				<video className={styles.container_video_player} ref={playerRef} src={src}></video>
-				<div className={styles.video_player__bottom}>
-					<div className={styles.video_player__bottom_container}>
-						<div className={styles.video_player__progress_bar}>
-							<span style={{ width: `${(playerState.currentTime / playerState.totalDuration) * 100}%` }}></span>
-							<div
-								className={styles.video_player__seek_interaction_layer}
-								onClick={handleProgressClick}
-								onMouseDown={handleSeekMouseDown}
-								onMouseMove={handleSeekMouseMove}
-								onMouseUp={handleSeekMouseUp}
-								role="button"
-							></div>
-						</div>
-						<div className={styles.video_player__controls}>
-							<div className={styles.video_player__controls_col}>
-								<span
-									onClick={handlePlayPause}
-									className={`${styles.video_player__controls_play_btn} ${styles.player_control}`}
-									title="Play"
-								>
-									{playerState.isPlaying ? (
-										<Pause width="32" height="32" color="#fff" />
-									) : (
-										<Play width="32" height="32" color="#fff" />
-									)}
-								</span>
-								<Menu
-									name="Playback Speed"
-									menuItems={[
-										{ name: "0.25x", value: 0.25 },
-										{ name: "0.5x", value: 0.5 },
-										{ name: "0.75x", value: 0.75 },
-										{ name: "1x", value: 1.0 },
-										{ name: "1.25x", value: 1.25 },
-										{ name: "1.50x", value: 1.5 },
-										{ name: "1.75x", value: 1.75 },
-										{ name: "2x", value: 2.0 },
-									]}
-									defaultValue={{ name: "1x", value: 1.0 }}
-									onChange={handlePlayBackSpeedChange}
-								/>
-								<input
-									type="range"
-									style={{ accentColor: "#fff" }}
-									min={0}
-									max={10}
-									step={0.5}
-									onChange={handleVolumeChange}
-									className={styles.player_control}
-									value={playerState.volume * 10}
-									title="Volume"
-								/>
+				<div className={styles.video_player__container}>
+					<video className={styles.container_video_player} ref={playerRef} src={src}></video>
+					<div className={styles.video_player__bottom}>
+						<div className={styles.video_player__bottom_container}>
+							<div className={styles.video_player__progress_bar}>
+								<span style={{ width: `${(playerState.currentTime / playerState.totalDuration) * 100}%` }}></span>
+								<div
+									className={styles.video_player__seek_interaction_layer}
+									onClick={handleProgressClick}
+									onMouseDown={handleSeekMouseDown}
+									onMouseMove={handleSeekMouseMove}
+									onMouseUp={handleSeekMouseUp}
+									role="button"
+								></div>
 							</div>
-							<div className={`${styles.video_player__controls_col} ${styles.middle}`}>
-								<div className={styles.video_player__time_display}>
-									<span className={styles.video_player__time_display__current_time}>
-										{formatTime(playerState.currentTime)}
+							<div className={styles.video_player__controls}>
+								<div className={styles.video_player__controls_col}>
+									<span
+										onClick={handlePlayPause}
+										className={`${styles.video_player__controls_play_btn} ${styles.player_control}`}
+										title="Play"
+									>
+										{playerState.isPlaying ? (
+											<Pause width="32" height="32" color="#fff" />
+										) : (
+											<Play width="32" height="32" color="#fff" />
+										)}
 									</span>
-									<span className={styles.video_player__time_display__separator}> &nbsp;/&nbsp;</span>
-									<span className={styles.video_player__time_display__total_time}>
-										{formatTime(playerState.totalDuration)}
+									<Menu
+										name="Playback Speed"
+										menuItems={[
+											{ name: "0.25x", value: 0.25 },
+											{ name: "0.5x", value: 0.5 },
+											{ name: "0.75x", value: 0.75 },
+											{ name: "1x", value: 1.0 },
+											{ name: "1.25x", value: 1.25 },
+											{ name: "1.50x", value: 1.5 },
+											{ name: "1.75x", value: 1.75 },
+											{ name: "2x", value: 2.0 },
+										]}
+										defaultValue={{ name: "1x", value: 1.0 }}
+										onChange={handlePlayBackSpeedChange}
+									/>
+									<input
+										type="range"
+										style={{ accentColor: "#fff" }}
+										min={0}
+										max={10}
+										step={0.5}
+										onChange={handleVolumeChange}
+										className={styles.player_control}
+										value={playerState.volume * 10}
+										title="Volume"
+									/>
+								</div>
+								<div className={`${styles.video_player__controls_col} ${styles.middle}`}>
+									<div className={styles.video_player__time_display}>
+										<span className={styles.video_player__time_display__current_time}>
+											{formatTime(playerState.currentTime)}
+										</span>
+										<span className={styles.video_player__time_display__separator}> &nbsp;/&nbsp;</span>
+										<span className={styles.video_player__time_display__total_time}>
+											{formatTime(playerState.totalDuration)}
+										</span>
+									</div>
+								</div>
+								<div className={`${styles.video_player__controls_col} ${styles.right}`}>
+									<Menu
+										name="Video Quality"
+										menuItems={[
+											{ name: "1080p", value: 1080 },
+											{ name: "720p", value: 720 },
+											{ name: "360p", value: 360 },
+										]}
+										defaultValue={{ name: "720p", value: 720 }}
+										onChange={() => {}}
+									/>
+									<span
+										className={`${styles.video_player__controls_fullscreen} ${styles.player_control}`}
+										onClick={handleEnterFullScreen}
+										title="Fullscreen"
+									>
+										{playerState.fullscreen ? (
+											<FullscreenExit width="32" height="32" color="#fff" />
+										) : (
+											<Fullscreen width="32" height="32" color="#fff" />
+										)}
 									</span>
 								</div>
-							</div>
-							<div className={`${styles.video_player__controls_col} ${styles.right}`}>
-								<Menu
-									name="Video Quality"
-									menuItems={[
-										{ name: "1080p", value: 1080 },
-										{ name: "720p", value: 720 },
-										{ name: "360p", value: 360 },
-									]}
-									defaultValue={{ name: "720p", value: 720 }}
-									onChange={() => {}}
-								/>
-								<span
-									className={`${styles.video_player__controls_fullscreen} ${styles.player_control}`}
-									onClick={handleEnterFullScreen}
-									title="Fullscreen"
-								>
-									{playerState.fullscreen ? (
-										<FullscreenExit width="32" height="32" color="#fff" />
-									) : (
-										<Fullscreen width="32" height="32" color="#fff" />
-									)}
-								</span>
 							</div>
 						</div>
 					</div>
 				</div>
+				<Annotator currentTimestamp={playerState.currentTime} />
 			</div>
 			<aside className={styles.details__pane}>
 				<div></div>
@@ -398,18 +407,3 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 };
 
 export default Player;
-
-const formatTime = (seconds: number): string => {
-	const hours = Math.floor(seconds / 3600);
-	const minutes = Math.floor((seconds % 3600) / 60);
-	const remainingSeconds = Math.floor(seconds % 60);
-
-	const timeParts = [];
-	if (hours > 0) {
-		timeParts.push(hours.toString().padStart(2, "0"));
-	}
-	timeParts.push(minutes.toString().padStart(2, "0"));
-	timeParts.push(remainingSeconds.toString().padStart(2, "0"));
-
-	return timeParts.join(":");
-};

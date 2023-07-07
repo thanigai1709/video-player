@@ -1,6 +1,6 @@
 import "./App.css";
 import Player from "./components/video-player/Player";
-import video from "./assets/demo.mp4";
+import video from "./assets/demo-2.mp4";
 
 function App() {
 	return (
