@@ -98,7 +98,7 @@
 /* Firefox */
 .annotationlist__wrapper {
 	scrollbar-width: auto;
-	scrollbar-color: rgba(184, 193, 207, 0.1) transparent;
+	scrollbar-color: rgba(184, 193, 207, 0.2) transparent;
 }
 
 .annotationlist__wrapper::-webkit-scrollbar {
@@ -110,7 +110,7 @@
 }
 
 .annotationlist__wrapper::-webkit-scrollbar-thumb {
-	background-color: rgba(184, 193, 207, 0.1);
+	background-color: rgba(184, 193, 207, 0.2);
 	border-radius: 0px;
 	border: 0px solid transparent;
 }
