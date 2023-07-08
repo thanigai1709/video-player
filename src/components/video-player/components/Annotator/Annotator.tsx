@@ -61,7 +61,7 @@ const Annotator: React.FC<AnnotatorProps> = ({ currentTimestamp, onAnnotationSub
 			<form onSubmit={handleAnnotationSubmit}>
 				<div className={styles.annotator__inputbox}>
 					<div className={styles.annotator__avatar}>
-						<span>T</span>
+						<span>U</span>
 					</div>
 					<textarea
 						className={styles.annotator__textarea}

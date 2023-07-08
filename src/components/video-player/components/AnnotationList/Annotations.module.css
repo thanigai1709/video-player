@@ -11,9 +11,13 @@
 	border-left: 2px solid #20222b;
 }
 
+.annotationcard:hover {
+	background-color: rgba(255, 255, 255, 0.06);
+}
+
 .annotationcard__active {
 	border-left-color: #5b53ff;
-	background-color: #14161c;
+	background-color: #14161c !important;
 }
 
 .annotationcard__header {
@@ -83,4 +87,30 @@
 
 .annotationcard:hover .annotationcard__footer_right {
 	opacity: 1;
+}
+
+.annotationlist__wrapper {
+	height: 80vh;
+	overflow-y: auto;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+.annotationlist__wrapper {
+	scrollbar-width: auto;
+	scrollbar-color: rgba(184, 193, 207, 0.1) transparent;
+}
+
+.annotationlist__wrapper::-webkit-scrollbar {
+	width: 5px;
+}
+
+.annotationlist__wrapper::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.annotationlist__wrapper::-webkit-scrollbar-thumb {
+	background-color: rgba(184, 193, 207, 0.1);
+	border-radius: 0px;
+	border: 0px solid transparent;
 }

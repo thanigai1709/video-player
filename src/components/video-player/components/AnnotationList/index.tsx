@@ -15,7 +15,7 @@ const AnnotationList: React.FC<AnnotationList> = ({ annotations, onSelect, selec
 	};
 
 	return (
-		<div>
+		<div className={styles.annotationlist__wrapper}>
 			{annotations.map((a) => (
 				<div
 					className={
