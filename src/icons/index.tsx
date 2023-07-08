@@ -34,6 +34,33 @@ const Icon: React.FC<IconsProps> = ({ width, height, color, name }) => {
 					/>
 				</svg>
 			);
+		case "comments":
+			return (
+				<svg xmlns="http://www.w3.org/2000/svg" className={name} width={width} height={height} viewBox="0 -960 960 960">
+					<path
+						fill={color}
+						d="M240-400h480v-60H240v60Zm0-130h480v-60H240v60Zm0-130h480v-60H240v60ZM140-240q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v740L720-240H140Z"
+					/>
+				</svg>
+			);
+		case "thumbsup":
+			return (
+				<svg xmlns="http://www.w3.org/2000/svg" className={name} width={width} height={height} viewBox="0 -960 960 960">
+					<path
+						fill={color}
+						d="M721-120H254v-512l278-288 33 26q11 8 14.5 18t3.5 23v10l-45 211h322q23 0 41.5 18.5T920-572v82q0 11-2.5 25.5T910-439L794-171q-9 21-29.5 36T721-120ZM194-632v512H80v-512h114Z"
+					/>
+				</svg>
+			);
+		case "trash":
+			return (
+				<svg xmlns="http://www.w3.org/2000/svg" className={name} width={width} height={height} viewBox="0 -960 960 960">
+					<path
+						fill={color}
+						d="M261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm106-146h60v-399h-60v399Zm166 0h60v-399h-60v399Z"
+					/>
+				</svg>
+			);
 		default:
 			return null;
 	}

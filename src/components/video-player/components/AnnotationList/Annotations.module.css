@@ -1,0 +1,86 @@
+.annotationcard {
+	display: flex;
+	flex-direction: column;
+	background-color: #20222b;
+	padding: 16px;
+	border-bottom: 1px solid #14161c;
+	color: #fff;
+	row-gap: 8px;
+	font-size: 14px;
+	cursor: pointer;
+	border-left: 2px solid #20222b;
+}
+
+.annotationcard__active {
+	border-left-color: #5b53ff;
+	background-color: #14161c;
+}
+
+.annotationcard__header {
+	display: flex;
+	align-items: center;
+	column-gap: 8px;
+}
+
+.annotationcard__user_avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 25px;
+	height: 25px;
+	font-size: 14px;
+	border-radius: 50%;
+	background-color: #5b53ff;
+}
+
+.annotationcard__header span {
+	font-size: 14px;
+}
+
+.annotationcard__timestamp {
+	margin-right: 8px;
+	font-size: 14px;
+	color: rgb(91, 83, 255);
+	font-weight: 500;
+}
+
+.annotationcard__comment {
+	color: #b8c1cf;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+.annotationcard__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.annotationcard__footer_left,
+.annotationcard__footer_right {
+	display: flex;
+	align-items: center;
+	column-gap: 8px;
+}
+
+.annotationcard__footer_right {
+	opacity: 0;
+	transition: all 0.4s ease;
+}
+
+.annotationcard__like_btn,
+.annotationcard__del_btn {
+	padding: 3px;
+	opacity: 0.5;
+	transition: all 0.3s ease;
+	cursor: pointer;
+}
+
+.annotationcard__like_btn:hover,
+.annotationcard__del_btn:hover {
+	opacity: 1;
+}
+
+.annotationcard:hover .annotationcard__footer_right {
+	opacity: 1;
+}

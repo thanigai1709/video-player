@@ -49,7 +49,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding-left: 36px;
+	padding-left: 48px;
 	padding-right: 12px;
 	padding-bottom: 8px;
 }
@@ -81,4 +81,10 @@
 	color: #fff;
 	padding: 8px 12px;
 	font-size: 14px;
+}
+
+.annotator__send:disabled {
+	opacity: 0.5;
+	cursor: none;
+	pointer-events: none;
 }

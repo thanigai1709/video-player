@@ -127,9 +127,25 @@
 	width: 390px;
 	background-color: #20222b;
 	flex-shrink: 0;
-	padding-block: 56px;
+	padding-bottom: 40px;
+}
+
+.annotations_list {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 }
 
 .video_metadata__container {
 	padding: 18px;
+}
+
+.annotations_list__header {
+	padding: 20px 16px;
+	color: #fff;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	border-bottom: 1px solid #14161c;
 }

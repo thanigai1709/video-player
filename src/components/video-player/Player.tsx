@@ -7,6 +7,9 @@ import FullscreenExit from "../../icons/FullscreenExit";
 import Menu from "./components/Menu/Menu";
 import Annotator from "./components/Annotator/Annotator";
 import { formatTime } from "../../utils";
+import { Annotation } from "../../types";
+import Icon from "../../icons";
+import AnnotationList from "./components/AnnotationList";
 
 interface PlayerProps {
 	src: string;
@@ -20,6 +23,9 @@ interface VideoPlayer {
 	fullscreen: boolean;
 	seekDrag: boolean;
 	isReady: boolean;
+	isInteruppted: boolean;
+	annotations: Annotation[];
+	activeAnnotation: Annotation | null;
 }
 
 const Player: React.FC<PlayerProps> = ({ src }) => {
@@ -33,6 +39,9 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		fullscreen: false,
 		seekDrag: false,
 		isReady: false,
+		isInteruppted: false,
+		annotations: [],
+		activeAnnotation: null,
 	});
 
 	useEffect(() => {
@@ -65,6 +74,8 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 
 	const initMetaData = (): void => {
 		if (playerRef.current) {
+			let annotations = JSON.parse(localStorage.getItem("annotations")) || [];
+			console.log(annotations, "annotations from storage");
 			setPlayerState({
 				isPlaying: false,
 				volume: playerRef.current.volume,
@@ -73,13 +84,16 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				fullscreen: false,
 				seekDrag: false,
 				isReady: true,
+				isInteruppted: false,
+				annotations: annotations,
+				activeAnnotation: null,
 			});
 		}
 	};
 
 	const updateCurrentTime = (): void => {
 		if (playerRef.current) {
-			setPlayerState((prev: VideoPlayer) => ({
+			setPlayerState((prev) => ({
 				...prev,
 				currentTime: playerRef.current.currentTime,
 			}));
@@ -87,7 +101,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 	};
 
 	const handleVideoEnd = (): void => {
-		setPlayerState((prev: VideoPlayer) => ({
+		setPlayerState((prev) => ({
 			...prev,
 			isPlaying: false,
 		}));
@@ -98,7 +112,6 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 
 	useEffect(() => {
 		if (playerRef.current) {
-			console.log("play state change");
 			if (playerState.isPlaying) {
 				playerRef.current?.play();
 			} else {
@@ -107,10 +120,23 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		}
 	}, [playerState.isPlaying]);
 
+	useEffect(() => {
+		if (playerState.activeAnnotation) {
+			console.log("active annotation set");
+			setPlayerState((prev) => ({
+				...prev,
+				isPlaying: false,
+				currentTime: playerState.activeAnnotation.timestamp,
+			}));
+			playerRef.current.currentTime = playerState.activeAnnotation.timestamp;
+		}
+	}, [playerState.activeAnnotation]);
+
 	const handlePlayPause = () => {
 		setPlayerState((prev) => ({
 			...prev,
 			isPlaying: !prev.isPlaying,
+			activeAnnotation: !prev.isPlaying && prev.activeAnnotation ? null : prev.activeAnnotation,
 		}));
 	};
 
@@ -297,6 +323,34 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		}));
 	};
 
+	const handleAnnotationAdded = (e: Annotation) => {
+		localStorage.setItem("annotations", JSON.stringify([...playerState.annotations, e]));
+		setPlayerState((prev) => ({
+			...prev,
+			annotations: [...prev.annotations, e],
+			isPlaying: prev.isInteruppted ? true : false,
+			isInteruppted: false,
+			activeAnnotation: null,
+		}));
+	};
+
+	const handleAnnotationAdding = () => {
+		if (playerState.isPlaying) {
+			setPlayerState((prev) => ({
+				...prev,
+				isPlaying: false,
+				isInteruppted: true,
+			}));
+		}
+	};
+
+	const handleCommentSelect = (e: Annotation) => {
+		setPlayerState((prev) => ({
+			...prev,
+			activeAnnotation: e,
+		}));
+	};
+
 	return (
 		<div className="video-parent__container">
 			<div
@@ -397,10 +451,24 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 						</div>
 					</div>
 				</div>
-				<Annotator currentTimestamp={playerState.currentTime} />
+				<Annotator
+					currentTimestamp={playerState.currentTime}
+					onAnnotationSubmit={handleAnnotationAdded}
+					onAnnotationChange={handleAnnotationAdding}
+				/>
 			</div>
 			<aside className={styles.details__pane}>
-				<div></div>
+				<div className={styles.annotations_list}>
+					<div className={styles.annotations_list__header}>
+						<Icon name="comments" width="20px" height="20px" color="#fff" /> Comments ({playerState.annotations.length})
+					</div>
+					<AnnotationList
+						annotations={playerState.annotations}
+						selectedAnnotation={playerState.activeAnnotation}
+						onDelete={() => {}}
+						onSelect={handleCommentSelect}
+					/>
+				</div>
 			</aside>
 		</div>
 	);
