@@ -130,6 +130,12 @@
 	padding-bottom: 40px;
 }
 
+@media screen and (max-width: 1099px) {
+	.details__pane {
+		width: 100%;
+	}
+}
+
 .annotations_list {
 	display: flex;
 	flex-direction: column;
