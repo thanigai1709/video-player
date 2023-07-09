@@ -136,6 +136,12 @@
 	}
 }
 
+@media screen and (max-width: 500px) {
+	input.player_control {
+		display: none;
+	}
+}
+
 .annotations_list {
 	display: flex;
 	flex-direction: column;
