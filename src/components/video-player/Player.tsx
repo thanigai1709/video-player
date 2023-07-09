@@ -1,9 +1,5 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import styles from "./Player.module.css";
-import Play from "../../icons/Play";
-import Pause from "../../icons/Pause";
-import Fullscreen from "../../icons/Fullscreen";
-import FullscreenExit from "../../icons/FullscreenExit";
 import Menu from "./components/Menu/Menu";
 import Annotator from "./components/Annotator/Annotator";
 import { formatTime } from "../../utils";
@@ -381,9 +377,9 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 										title="Play"
 									>
 										{playerState.isPlaying ? (
-											<Pause width="32" height="32" color="#fff" />
+											<Icon width="32" height="32" color="#fff" name="pause" />
 										) : (
-											<Play width="32" height="32" color="#fff" />
+											<Icon width="32" height="32" color="#fff" name="play" />
 										)}
 									</span>
 									<Menu
@@ -441,9 +437,9 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 										title="Fullscreen"
 									>
 										{playerState.fullscreen ? (
-											<FullscreenExit width="32" height="32" color="#fff" />
+											<Icon width="32" height="32" color="#fff" name="fullscreen-exit" />
 										) : (
-											<Fullscreen width="32" height="32" color="#fff" />
+											<Icon width="32" height="32" color="#fff" name="fullscreen" />
 										)}
 									</span>
 								</div>
