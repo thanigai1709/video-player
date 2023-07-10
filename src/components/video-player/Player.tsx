@@ -22,6 +22,9 @@ interface VideoPlayer {
 	isInteruppted: boolean;
 	annotations: Annotation[];
 	activeAnnotation: Annotation | null;
+	scrubHover: boolean;
+	scrubTime: number;
+	bufferedTime: number;
 }
 
 const Player: React.FC<PlayerProps> = ({ src }) => {
@@ -38,6 +41,9 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		isInteruppted: false,
 		annotations: [],
 		activeAnnotation: null,
+		scrubHover: false,
+		scrubTime: 0,
+		bufferedTime: 0,
 	});
 
 	useEffect(() => {
@@ -45,6 +51,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 			playerRef.current.addEventListener("loadedmetadata", initMetaData);
 			playerRef.current.addEventListener("ended", handleVideoEnd);
 			playerRef.current.addEventListener("timeupdate", updateCurrentTime);
+			playerRef.current.addEventListener("progress", updateBufferProgress);
 		}
 
 		if (window) {
@@ -83,7 +90,11 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				isInteruppted: false,
 				annotations: annotations,
 				activeAnnotation: null,
+				scrubHover: false,
+				scrubTime: 0,
+				bufferedTime: 0,
 			});
+			console.log(playerRef.current.buffered, "buffered time initially");
 		}
 	};
 
@@ -284,6 +295,19 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				}));
 			}
 		}
+
+		if (playerState.scrubHover) {
+			const progressBar = e.currentTarget;
+			const boundingRect = progressBar.getBoundingClientRect();
+			const clickX = e.clientX - boundingRect.left;
+			const progressBarWidth = boundingRect.width;
+			const hoverPercentage = clickX / progressBarWidth;
+			const newTime = hoverPercentage * playerState.totalDuration;
+			setPlayerState((prev: VideoPlayer) => ({
+				...prev,
+				scrubTime: newTime,
+			}));
+		}
 	};
 
 	const handleEnterFullScreen = () => {
@@ -347,6 +371,56 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		}));
 	};
 
+	const handleSeekMouseEnter = () => {
+		setPlayerState((prev) => ({
+			...prev,
+			scrubHover: true,
+		}));
+	};
+
+	const handleSeekMouseLeave = () => {
+		setPlayerState((prev) => ({
+			...prev,
+			scrubHover: false,
+		}));
+	};
+
+	const updateBufferProgress = (e) => {
+		console.log(e, "update buffer progress");
+		const totalDuration = playerRef.current.duration;
+		if (totalDuration > 0) {
+			for (let i = 0; i < playerRef.current.buffered.length; i++) {
+				if (
+					playerRef.current.buffered.start(playerRef.current.buffered.length - 1 - i) < playerRef.current.currentTime
+				) {
+					const bufferedTime =
+						(playerRef.current.buffered.end(playerRef.current.buffered.length - 1 - i) * 100) / totalDuration;
+					setPlayerState((prev) => ({
+						...prev,
+						bufferedTime: bufferedTime,
+					}));
+					break;
+				}
+			}
+		}
+	};
+
+	function initBufferTime() {
+		const totalDuration = playerRef.current.duration;
+		if (totalDuration > 0) {
+			for (let i = 0; i < playerRef.current.buffered.length; i++) {
+				if (
+					playerRef.current.buffered.start(playerRef.current.buffered.length - 1 - i) < playerRef.current.currentTime
+				) {
+					const bufferedTime =
+						(playerRef.current.buffered.end(playerRef.current.buffered.length - 1 - i) * 100) / totalDuration;
+					console.log(formatTime(bufferedTime), "buffered time");
+					break;
+				}
+			}
+		}
+	}
+
 	return (
 		<div className="video-parent__container">
 			<div
@@ -358,16 +432,27 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 					<video className={styles.container_video_player} ref={playerRef} src={src}></video>
 					<div className={styles.video_player__bottom}>
 						<div className={styles.video_player__bottom_container}>
-							<div className={styles.video_player__progress_bar}>
-								<span style={{ width: `${(playerState.currentTime / playerState.totalDuration) * 100}%` }}></span>
+							<div className={styles.seek_bars__container}>
 								<div
-									className={styles.video_player__seek_interaction_layer}
+									className={styles.seek__interaction_layer}
 									onClick={handleProgressClick}
 									onMouseDown={handleSeekMouseDown}
 									onMouseMove={handleSeekMouseMove}
 									onMouseUp={handleSeekMouseUp}
+									onMouseEnter={handleSeekMouseEnter}
+									onMouseLeave={handleSeekMouseLeave}
 									role="button"
 								></div>
+								<div
+									className={styles.seek__progressBar}
+									style={{ width: `${(playerState.currentTime / playerState.totalDuration) * 100}%` }}
+								></div>
+								<div
+									className={styles.seek__scrubber}
+									data-timestamp={`${formatTime(playerState.scrubTime)}`}
+									style={{ width: `${(playerState.scrubTime / playerState.totalDuration) * 100}%` }}
+								></div>
+								<div className={styles.seek__buffer}></div>
 							</div>
 							<div className={styles.video_player__controls}>
 								<div className={styles.video_player__controls_col}>
