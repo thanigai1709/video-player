@@ -81,22 +81,57 @@
 	row-gap: 12px;
 }
 
-.video_player__progress_bar {
+.seek_bars__container {
 	height: 5px;
-	background-color: #ffffff59;
+	background-color: rgba(255, 255, 255, 0.1);
 	width: 100%;
 	position: relative;
 }
 
-.video_player__progress_bar span {
+.seek__progressBar {
 	position: absolute;
 	width: 0%;
 	height: 5px;
 	background-color: #5b53ff;
 	left: 0;
+	z-index: 3;
 }
 
-.video_player__seek_interaction_layer {
+.seek__scrubber {
+	position: absolute;
+	width: 0%;
+	height: 5px;
+	background-color: rgba(255, 255, 255, 0.2);
+	left: 0;
+	z-index: 2;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.seek__scrubber:after {
+	content: attr(data-timestamp);
+	text-shadow: 1px 1px 5px rgb(0, 0, 0);
+	position: absolute;
+	color: #fff;
+	right: -20px;
+	bottom: 10px;
+	font-size: 14px;
+}
+
+.seek__buffer {
+	position: absolute;
+	width: 0%;
+	height: 5px;
+	background-color: rgba(196, 16, 16, 0.477);
+	left: 0;
+	z-index: 1;
+}
+
+.seek_bars__container:hover .seek__scrubber {
+	opacity: 1;
+}
+
+.seek__interaction_layer {
 	position: absolute;
 	width: 100%;
 	left: 0;
