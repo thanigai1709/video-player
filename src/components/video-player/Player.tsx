@@ -405,22 +405,6 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		}
 	};
 
-	function initBufferTime() {
-		const totalDuration = playerRef.current.duration;
-		if (totalDuration > 0) {
-			for (let i = 0; i < playerRef.current.buffered.length; i++) {
-				if (
-					playerRef.current.buffered.start(playerRef.current.buffered.length - 1 - i) < playerRef.current.currentTime
-				) {
-					const bufferedTime =
-						(playerRef.current.buffered.end(playerRef.current.buffered.length - 1 - i) * 100) / totalDuration;
-					console.log(formatTime(bufferedTime), "buffered time");
-					break;
-				}
-			}
-		}
-	}
-
 	return (
 		<div className="video-parent__container">
 			<div
