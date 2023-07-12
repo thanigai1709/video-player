@@ -54,7 +54,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 			playerRef.current.addEventListener("loadedmetadata", initMetaData);
 			playerRef.current.addEventListener("ended", handleVideoEnd);
 			playerRef.current.addEventListener("timeupdate", updateCurrentTime);
-			playerRef.current.addEventListener("progress", updateBufferProgress);
+			playerRef.current.addEventListener("progress", () => updateBufferProgress());
 		}
 
 		if (window) {
@@ -70,6 +70,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				playerRef.current.removeEventListener("loadedmetadata", initMetaData);
 				playerRef.current.removeEventListener("ended", handleVideoEnd);
 				playerRef.current.removeEventListener("timeupdate", updateCurrentTime);
+				playerRef.current.addEventListener("progress", () => updateBufferProgress());
 			}
 			window.removeEventListener("keydown", handleKeyBoardMacros);
 			document.removeEventListener("fullscreenchange", handleExitFullScreen);
@@ -98,7 +99,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				bufferedTime: 0,
 				loop: false,
 			});
-			console.log(playerRef.current.buffered, "buffered time initially");
+			updateBufferProgress();
 		}
 	};
 
@@ -397,23 +398,22 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		}));
 	};
 
-	const updateBufferProgress = (e) => {
-		console.log(e, "update buffer progress");
-		const totalDuration = playerRef.current.duration;
-		if (totalDuration > 0) {
+	const updateBufferProgress = () => {
+		if (playerRef.current && playerRef.current.buffered.length > 0) {
+			let bufferedTime = 0;
 			for (let i = 0; i < playerRef.current.buffered.length; i++) {
 				if (
-					playerRef.current.buffered.start(playerRef.current.buffered.length - 1 - i) < playerRef.current.currentTime
+					playerRef.current.buffered.start(i) <= playerRef.current.currentTime &&
+					playerRef.current.buffered.end(i) >= playerRef.current.currentTime
 				) {
-					const bufferedTime =
-						(playerRef.current.buffered.end(playerRef.current.buffered.length - 1 - i) * 100) / totalDuration;
-					setPlayerState((prev) => ({
-						...prev,
-						bufferedTime: bufferedTime,
-					}));
+					bufferedTime = playerRef.current.buffered.end(i);
 					break;
 				}
 			}
+			setPlayerState((prev) => ({
+				...prev,
+				bufferedTime: bufferedTime,
+			}));
 		}
 	};
 
@@ -458,7 +458,10 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 									data-timestamp={`${formatTime(playerState.scrubTime)}`}
 									style={{ width: `${(playerState.scrubTime / playerState.totalDuration) * 100}%` }}
 								></div>
-								<div className={styles.seek__buffer}></div>
+								<div
+									className={styles.seek__buffer}
+									style={{ width: `${(playerState.bufferedTime / playerState.totalDuration) * 100}%` }}
+								></div>
 							</div>
 							<div className={styles.video_player__controls}>
 								<div className={styles.video_player__controls_col}>

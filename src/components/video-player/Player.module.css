@@ -101,7 +101,7 @@
 	position: absolute;
 	width: 0%;
 	height: 5px;
-	background-color: rgba(255, 255, 255, 0.2);
+	background-color: rgba(255, 255, 255, 0.4);
 	left: 0;
 	z-index: 2;
 	opacity: 0;
@@ -127,7 +127,7 @@
 	position: absolute;
 	width: 0%;
 	height: 5px;
-	background-color: rgba(196, 16, 16, 0.477);
+	background-color: rgba(255, 255, 255, 0.3);
 	left: 0;
 	z-index: 1;
 }
