@@ -25,10 +25,12 @@ interface VideoPlayer {
 	scrubHover: boolean;
 	scrubTime: number;
 	bufferedTime: number;
+	loop: boolean;
 }
 
 const Player: React.FC<PlayerProps> = ({ src }) => {
 	const playerRef = useRef<HTMLVideoElement>(null);
+	const hoverTimeStampRef = useRef<HTMLDivElement>(null);
 	const playerContainerRef = useRef<HTMLDivElement>(null);
 	const [playerState, setPlayerState] = useState<VideoPlayer>({
 		isPlaying: false,
@@ -44,6 +46,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		scrubHover: false,
 		scrubTime: 0,
 		bufferedTime: 0,
+		loop: false,
 	});
 
 	useEffect(() => {
@@ -93,6 +96,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				scrubHover: false,
 				scrubTime: 0,
 				bufferedTime: 0,
+				loop: false,
 			});
 			console.log(playerRef.current.buffered, "buffered time initially");
 		}
@@ -112,9 +116,6 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 			...prev,
 			isPlaying: false,
 		}));
-		if (playerRef.current) {
-			playerRef.current.currentTime = 0;
-		}
 	};
 
 	useEffect(() => {
@@ -126,6 +127,12 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 			}
 		}
 	}, [playerState.isPlaying]);
+
+	useEffect(() => {
+		if (playerRef.current) {
+			playerRef.current.loop = playerState.loop;
+		}
+	}, [playerState.loop]);
 
 	useEffect(() => {
 		if (playerState.activeAnnotation) {
@@ -150,7 +157,6 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 	const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
 		let playerVolume: number = Number(e.target.value) / 10;
 		console.log(playerVolume, "value");
-
 		if (playerRef.current && typeof playerRef.current.volume !== "undefined") {
 			playerRef.current.volume = playerVolume;
 		}
@@ -198,27 +204,26 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 	const handleKeyBoardMacros = (e: KeyboardEvent) => {
 		//@ts-ignore
 		let targetElement: HTMLElement = e.target;
-		console.log(targetElement.tagName, "name");
 		if (targetElement.tagName === "BODY") {
 			switch (e.code) {
 				case "Space":
 					handlePlayPause();
-					break;
+					return;
 				case "ArrowRight":
 					handleForward(5);
-					break;
+					return;
 				case "ArrowLeft":
 					handleBackward(5);
-					break;
+					return;
 				case "ArrowUp":
 					handleVolumeUpDown(0.05, "+");
-					break;
+					return;
 				case "ArrowDown":
 					handleVolumeUpDown(0.05, "-");
-					break;
+					return;
 				case "KeyK":
 					handlePlayPause();
-					break;
+					return;
 			}
 		}
 	};
@@ -256,7 +261,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		if (playerRef.current) {
 			let newTime = playerRef.current.currentTime + fSeconds;
 			playerRef.current.currentTime = newTime;
-			setPlayerState((prev) => ({ ...prev, currentTime: newTime }));
+			setPlayerState((prev) => ({ ...prev, currentTime: playerRef.current.currentTime }));
 		}
 	};
 
@@ -264,7 +269,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		if (playerRef.current) {
 			let newTime = playerRef.current.currentTime - bSeconds;
 			playerRef.current.currentTime = newTime;
-			setPlayerState((prev) => ({ ...prev, currentTime: newTime }));
+			setPlayerState((prev) => ({ ...prev, currentTime: playerRef.current.currentTime }));
 		}
 	};
 
@@ -302,10 +307,17 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 			const clickX = e.clientX - boundingRect.left;
 			const progressBarWidth = boundingRect.width;
 			const hoverPercentage = clickX / progressBarWidth;
-			const newTime = hoverPercentage * playerState.totalDuration;
+			const newHoverTime = hoverPercentage * playerState.totalDuration;
+			const hoverTimeStampWidth = hoverTimeStampRef.current.getBoundingClientRect().width;
+			const hoverTimeStampWidthPrcnt = (hoverTimeStampWidth / progressBarWidth) * 100;
+			let newHoverTimeInDistance = Math.max(
+				(newHoverTime / playerState.totalDuration) * 100 - hoverTimeStampWidthPrcnt,
+				0
+			);
+			hoverTimeStampRef.current.style.left = `${newHoverTimeInDistance}%`;
 			setPlayerState((prev: VideoPlayer) => ({
 				...prev,
-				scrubTime: newTime,
+				scrubTime: newHoverTime,
 			}));
 		}
 	};
@@ -405,6 +417,13 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		}
 	};
 
+	const handleRepeat = () => {
+		setPlayerState((prev) => ({
+			...prev,
+			loop: !prev.loop,
+		}));
+	};
+
 	return (
 		<div className="video-parent__container">
 			<div
@@ -431,6 +450,9 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 									className={styles.seek__progressBar}
 									style={{ width: `${(playerState.currentTime / playerState.totalDuration) * 100}%` }}
 								></div>
+								<div className={styles.seek__scrubber_timestamp} ref={hoverTimeStampRef}>
+									{formatTime(playerState.scrubTime)}
+								</div>
 								<div
 									className={styles.seek__scrubber}
 									data-timestamp={`${formatTime(playerState.scrubTime)}`}
@@ -450,6 +472,17 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 										) : (
 											<Icon width="32" height="32" color="#fff" name="play" />
 										)}
+									</span>
+									<span
+										onClick={handleRepeat}
+										className={
+											playerState.loop
+												? `${styles.player_control} ${styles.player_control__active}`
+												: styles.player_control
+										}
+										title="Loop"
+									>
+										<Icon width="23px" height="23px" color={playerState.loop ? "#5b53ff" : "#fff"} name="repeat" />
 									</span>
 									<Menu
 										name="Playback Speed"

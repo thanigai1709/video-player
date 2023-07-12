@@ -108,14 +108,19 @@
 	transition: opacity 0.3s ease;
 }
 
-.seek__scrubber:after {
-	content: attr(data-timestamp);
+.seek__scrubber_timestamp {
 	text-shadow: 1px 1px 5px rgb(0, 0, 0);
 	position: absolute;
 	color: #fff;
 	right: -20px;
 	bottom: 10px;
 	font-size: 14px;
+	left: 0;
+	width: fit-content;
+	padding-inline: 4px;
+	box-sizing: border-box;
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .seek__buffer {
@@ -127,7 +132,8 @@
 	z-index: 1;
 }
 
-.seek_bars__container:hover .seek__scrubber {
+.seek_bars__container:hover .seek__scrubber,
+.seek_bars__container:hover .seek__scrubber_timestamp {
 	opacity: 1;
 }
 
@@ -143,8 +149,12 @@
 
 .player_control {
 	cursor: pointer;
-	opacity: 0.6;
+	opacity: 0.7;
 	transition: opacity 0.3s ease;
+}
+
+.player_control__active {
+	opacity: 1;
 }
 
 .player_control:hover,
