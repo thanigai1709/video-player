@@ -1,71 +1,39 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import styles from "./AnnotationCanvas.module.css";
+import { useAtomValue } from "jotai";
+import { CanvasDrawConfig } from "../../../../context/CanvasDrawContext";
+import { AnnotationCanvasProps, DrawCanvasState, DrawingAnnotation } from "../../../../types";
 
-interface AnnotationCanvasProps {
-	width: number;
-	height: number;
-}
-
-interface CanvasState {
-	isDrawing: boolean;
-	x1: number[];
-	x2: number[];
-	y1: number[];
-	y2: number[];
-}
-
-type Rect = {
-	tool: "rect";
-	color: string;
-	size: number;
-	x: number;
-	y: number;
-	w: number;
-	h: number;
+type DrawingAnnotationState = DrawingAnnotation & {
+	id: string;
 };
-
-type Pen = {
-	tool: "pen";
-	color: string;
-	size: number;
-	xs: number[];
-	ys: number[];
-};
-
-type Line = {
-	tool: "line";
-	color: string;
-	size: number;
-	x1: number;
-	y1: number;
-	x2: number;
-	y2: number;
-};
-
-type DrawingAnnotation = Rect | Pen | Line;
-type DrawingTools = "rect" | "line" | "pen";
 
 const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-	const [canvasState, setCanvasState] = useState<CanvasState>({
+	const [canvasState, setCanvasState] = useState<DrawCanvasState>({
 		isDrawing: false,
 		x1: [],
 		x2: [],
 		y1: [],
 		y2: [],
 	});
-	const [tool, setTool] = useState<DrawingTools>("line");
-	const [color, setcolor] = useState<string>("cyan");
-	const [annotations, setAnnotations] = useState<DrawingAnnotation[]>([]);
+
+	const [annotations, setAnnotations] = useState<DrawingAnnotationState[]>([]);
+	const { tool, color, isCanvasActive } = useAtomValue(CanvasDrawConfig);
 
 	useEffect(() => {
-		console.log("use hook running");
 		if (canvasRef.current) {
 			contextRef.current = canvasRef.current.getContext("2d");
 			renderDrawingAnnotations();
 		}
 	}, []);
+
+	useEffect(() => {
+		if (canvasRef.current && isCanvasActive) {
+			renderDrawingAnnotations();
+		}
+	}, [isCanvasActive]);
 
 	useEffect(() => {
 		renderDrawingAnnotations();
@@ -114,6 +82,7 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 
 	const startDrawing = (e: React.MouseEvent) => {
 		const canvasBoundingClient = canvasRef.current?.getBoundingClientRect();
+
 		contextRef.current = canvasRef.current.getContext("2d");
 		contextRef.current.beginPath();
 		contextRef.current.moveTo(
@@ -165,6 +134,7 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			if (tool === "rect") {
 				clearCanvas();
 				renderDrawingAnnotations();
+				contextRef.current.strokeStyle = color;
 				contextRef.current.strokeRect(
 					canvasState.x1[0],
 					canvasState.y1[0],
@@ -191,6 +161,7 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			if (tool === "line") {
 				clearCanvas();
 				renderDrawingAnnotations();
+				contextRef.current.strokeStyle = color;
 				contextRef.current.lineCap = "round";
 				contextRef.current.lineJoin = "round";
 				contextRef.current.beginPath();
@@ -213,6 +184,7 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			setAnnotations([
 				...annotations,
 				{
+					id: "123",
 					tool: tool,
 					color: color,
 					size: 2,
@@ -228,6 +200,7 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			setAnnotations([
 				...annotations,
 				{
+					id: "123",
 					tool: tool,
 					color: color,
 					size: 2,
@@ -241,6 +214,7 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			setAnnotations([
 				...annotations,
 				{
+					id: "123",
 					tool: tool,
 					color: color,
 					size: 2,
@@ -260,20 +234,24 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			y2: [],
 			isDrawing: false,
 		}));
+		console.log(canvasState, "canvas state");
 	};
+	if (isCanvasActive) {
+		return (
+			<div className={styles.AnnotationCanvas__container}>
+				<canvas
+					ref={canvasRef}
+					width={width}
+					height={height}
+					onMouseDown={startDrawing}
+					onMouseMove={handleDrawing}
+					onMouseUp={endDrawing}
+				></canvas>
+			</div>
+		);
+	}
 
-	return (
-		<div className={styles.AnnotationCanvas__container}>
-			<canvas
-				ref={canvasRef}
-				width={width}
-				height={height}
-				onMouseDown={startDrawing}
-				onMouseMove={handleDrawing}
-				onMouseUp={endDrawing}
-			></canvas>
-		</div>
-	);
+	return null;
 };
 
 export default AnnotationCanvas;

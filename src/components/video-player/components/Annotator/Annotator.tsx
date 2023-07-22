@@ -3,6 +3,7 @@ import styles from "./Annotator.module.css";
 import Icon from "../../../../icons/index";
 import { ChangeEvent, useState } from "react";
 import { Annotation } from "../../../../types";
+import AnnotationControls from "../AnnotationControls";
 
 interface AnnotatorProps {
 	currentTimestamp: number;
@@ -95,9 +96,12 @@ const Annotator: React.FC<AnnotatorProps> = ({ currentTimestamp, onAnnotationSub
 							name={annotatorState.timeStampEnabled ? "checkbox--checked" : "checkbox--unchecked"}
 						/>
 					</div>
-					<button className={styles.annotator__send} disabled={annotatorState.commentText.length > 0 ? false : true}>
-						Send
-					</button>
+					<div className={styles.annotator__footer_left}>
+						<AnnotationControls />
+						<button className={styles.annotator__send} disabled={annotatorState.commentText.length > 0 ? false : true}>
+							Send
+						</button>
+					</div>
 				</div>
 			</form>
 		</div>
