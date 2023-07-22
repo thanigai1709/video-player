@@ -206,3 +206,7 @@
 	gap: 8px;
 	border-bottom: 1px solid #14161c;
 }
+
+.video_player__wrapper {
+	position: relative;
+}
