@@ -1,12 +1,8 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./AnnotationCanvas.module.css";
-import { useAtomValue } from "jotai";
-import { CanvasDrawConfig } from "../../../../context/CanvasDrawContext";
+import { useAtom, useAtomValue } from "jotai";
+import { ActiveDrawData, CanvasDrawConfig, DrawAnnotation } from "../../../../context/CanvasDrawContext";
 import { AnnotationCanvasProps, DrawCanvasState, DrawingAnnotation } from "../../../../types";
-
-type DrawingAnnotationState = DrawingAnnotation & {
-	id: string;
-};
 
 const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -19,8 +15,9 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 		y2: [],
 	});
 
-	const [annotations, setAnnotations] = useState<DrawingAnnotationState[]>([]);
+	const [annotations, setAnnotations] = useAtom(ActiveDrawData);
 	const { tool, color, isCanvasActive } = useAtomValue(CanvasDrawConfig);
+	const activeAnnotation = useAtomValue(DrawAnnotation);
 
 	useEffect(() => {
 		if (canvasRef.current) {
@@ -30,8 +27,17 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 	}, []);
 
 	useEffect(() => {
+		if (activeAnnotation.length) {
+			patchDrawingAnnotations();
+		}
+	}, [activeAnnotation]);
+
+	useEffect(() => {
 		if (canvasRef.current && isCanvasActive) {
 			renderDrawingAnnotations();
+		}
+		if (!isCanvasActive) {
+			patchDrawingAnnotations();
 		}
 	}, [isCanvasActive]);
 
@@ -54,6 +60,38 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			if (context) {
 				clearCanvas();
 				annotations.forEach((annotation: DrawingAnnotation) => {
+					if (annotation.tool === "rect") {
+						context.strokeStyle = annotation.color;
+						context.lineWidth = annotation.size;
+						context.strokeRect(annotation.x * width, annotation.y * width, annotation.w * width, annotation.h * width);
+					} else if (annotation.tool === "pen") {
+						context.strokeStyle = annotation.color;
+						context.lineWidth = annotation.size;
+						context.moveTo(annotation.xs[0] * width, annotation.ys[0] * width);
+						for (let i = 1; i < annotation.xs.length; i++) {
+							context.lineTo(annotation.xs[i] * width, annotation.ys[i] * width);
+						}
+						context.stroke();
+						context.beginPath();
+					} else if (annotation.tool === "line") {
+						context.strokeStyle = annotation.color;
+						context.lineWidth = annotation.size;
+						context.beginPath();
+						context.moveTo(annotation.x1 * width, annotation.y1 * width);
+						context.lineTo(annotation.x2 * width, annotation.y2 * width);
+						context.stroke();
+					}
+				});
+			}
+		}
+	};
+
+	const patchDrawingAnnotations = () => {
+		if (canvasRef.current) {
+			const context = canvasRef.current.getContext("2d");
+			if (context) {
+				clearCanvas();
+				activeAnnotation.forEach((annotation: DrawingAnnotation) => {
 					if (annotation.tool === "rect") {
 						context.strokeStyle = annotation.color;
 						context.lineWidth = annotation.size;
@@ -184,7 +222,6 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			setAnnotations([
 				...annotations,
 				{
-					id: "123",
 					tool: tool,
 					color: color,
 					size: 2,
@@ -200,7 +237,6 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			setAnnotations([
 				...annotations,
 				{
-					id: "123",
 					tool: tool,
 					color: color,
 					size: 2,
@@ -214,7 +250,6 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 			setAnnotations([
 				...annotations,
 				{
-					id: "123",
 					tool: tool,
 					color: color,
 					size: 2,
@@ -236,7 +271,7 @@ const AnnotationCanvas: React.FC<AnnotationCanvasProps> = ({ width, height }) =>
 		}));
 		console.log(canvasState, "canvas state");
 	};
-	if (isCanvasActive) {
+	if (isCanvasActive || activeAnnotation.length) {
 		return (
 			<div className={styles.AnnotationCanvas__container}>
 				<canvas

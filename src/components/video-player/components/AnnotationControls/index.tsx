@@ -16,7 +16,6 @@ const AnnotationControls = () => {
 			...prev,
 			color: colors[0],
 			tool: tools[0],
-			isCanvasActive: true,
 		}));
 	}, []);
 
@@ -45,6 +44,7 @@ const AnnotationControls = () => {
 		<div className={styles.Annotation_controls__container}>
 			<div className={styles.Annotation_controls__header}>
 				<button
+					type="button"
 					className={
 						drawConfig.isCanvasActive
 							? `${styles.Annotation_controls__header_btn} ${styles.Annotation_controls__header_btn__active}`
@@ -65,6 +65,7 @@ const AnnotationControls = () => {
 				<div className={styles.Annotation_controls__list_colors}>
 					{colors.map((c, i) => (
 						<button
+							type="button"
 							className={
 								drawConfig.color === c
 									? `${styles.control_color} ${styles.control_color__active}`
@@ -83,6 +84,7 @@ const AnnotationControls = () => {
 				<div className={styles.Annotation_controls__list_tools}>
 					{tools.map((t, i) => (
 						<button
+							type="button"
 							className={
 								drawConfig.tool === t ? `${styles.control_tool} ${styles.control_tool__active}` : styles.control_tool
 							}

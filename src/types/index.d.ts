@@ -1,4 +1,5 @@
 export interface Annotation {
+	annotations: DrawingAnnotation[] | null;
 	timestamp: number | null;
 	comment: string;
 	userId: string;

@@ -7,6 +7,8 @@ import { Annotation } from "../../types";
 import Icon from "../../icons";
 import AnnotationList from "./components/AnnotationList";
 import AnnotationCanvas from "./components/AnnotationCanvas";
+import { useSetAtom } from "jotai";
+import { DrawAnnotation } from "../../context/CanvasDrawContext";
 
 interface PlayerProps {
 	src: string;
@@ -54,11 +56,11 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		bufferedTime: 0,
 		loop: false,
 	});
+	const setDataForCanvasDisplay = useSetAtom(DrawAnnotation);
 	const [AnnotationCanvasSize, setAnnotationCanvasSize] = useState<AnnotationCanvasSize>({
 		width: 0,
 		height: 0,
 	});
-
 	useEffect(() => {
 		if (playerRef.current) {
 			playerRef.current.addEventListener("loadedmetadata", initMetaData);
@@ -171,6 +173,13 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				currentTime: playerState.activeAnnotation.timestamp,
 			}));
 			playerRef.current.currentTime = playerState.activeAnnotation.timestamp;
+			setDataForCanvasDisplay([]);
+			if (playerState.activeAnnotation.annotations != null) {
+				setDataForCanvasDisplay(playerState.activeAnnotation.annotations);
+			}
+		} else {
+			console.log("active annotation unset");
+			setDataForCanvasDisplay([]);
 		}
 	}, [playerState.activeAnnotation]);
 
