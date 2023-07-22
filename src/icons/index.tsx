@@ -115,6 +115,42 @@ const Icon: React.FC<IconsProps> = ({ width, height, color, name }) => {
 					/>
 				</svg>
 			);
+		case "paint":
+			return (
+				<svg width={width} height={height} className={name} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+					<path
+						fill={color}
+						d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-84 32-157t87.5-127q55.5-54 130-85T489-880q79 0 150 26.5T763.5-780q53.5 47 85 111.5T880-527q0 108-63 170.5T650-294h-75q-18 0-31 14t-13 31q0 20 14.5 38t14.5 43q0 26-24.5 57T480-80ZM247-454q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15Zm126-170q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15Zm214 0q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15Zm131 170q20 0 35-15t15-35q0-20-15-35t-35-15q-20 0-35 15t-15 35q0 20 15 35t35 15Z"
+					/>
+				</svg>
+			);
+		case "pen":
+			return (
+				<svg width={width} height={height} className={name} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+					<path
+						fill={color}
+						d="M215-117q-34 0-67-11.5T90-166q35-12 50-35t15-62q0-44 30.5-74.5T260-368q44 0 74.5 30.5T365-263q0 64-43.5 105T215-117Zm230-237-90-95 376-376q14-14 31-14.5t32 14.5l29 29q15 15 14.5 32.5T823-732L445-354Z"
+					/>
+				</svg>
+			);
+		case "rect":
+			return (
+				<svg width={width} height={height} className={name} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+					<path
+						fill={color}
+						d="M180-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h600q24 0 42 18t18 42v520q0 24-18 42t-42 18H180Zm0-60h600v-520H180v520Zm0 0v-520 520Z"
+					/>
+				</svg>
+			);
+		case "line":
+			return (
+				<svg width={width} height={height} className={name} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+					<path
+						fill={color}
+						d="M212-212q-9-9-9-21t9-21l494-494q8-8 20.5-8.5T748-748q9 9 9 21t-9 21L254-212q-9 9-21 9t-21-9Z"
+					/>
+				</svg>
+			);
 		default:
 			return null;
 	}

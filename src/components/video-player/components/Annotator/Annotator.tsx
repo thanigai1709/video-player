@@ -2,7 +2,10 @@ import { UUID, formatTime } from "../../../../utils";
 import styles from "./Annotator.module.css";
 import Icon from "../../../../icons/index";
 import { ChangeEvent, useState } from "react";
-import { Annotation } from "../../../../types";
+import { Annotation, DrawingAnnotation } from "../../../../types";
+import AnnotationControls from "../AnnotationControls";
+import { useAtom, useSetAtom } from "jotai";
+import { ActiveDrawData, CanvasDrawConfig } from "../../../../context/CanvasDrawContext";
 
 interface AnnotatorProps {
 	currentTimestamp: number;
@@ -13,13 +16,17 @@ interface AnnotatorProps {
 interface AnnotatorState {
 	timeStampEnabled: boolean;
 	commentText: string;
+	annotations: DrawingAnnotation[];
 }
 
 const Annotator: React.FC<AnnotatorProps> = ({ currentTimestamp, onAnnotationSubmit, onAnnotationChange }) => {
 	const [annotatorState, setAnnotatorState] = useState<AnnotatorState>({
 		timeStampEnabled: true,
 		commentText: "",
+		annotations: [],
 	});
+	const [activeAnnotation, resetAnnotation] = useAtom(ActiveDrawData);
+	const setDrawConfig = useSetAtom(CanvasDrawConfig);
 
 	const handleCommentText = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		setAnnotatorState((prev) => ({
@@ -42,6 +49,7 @@ const Annotator: React.FC<AnnotatorProps> = ({ currentTimestamp, onAnnotationSub
 	const handleAnnotationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		onAnnotationSubmit({
+			annotations: activeAnnotation.length ? activeAnnotation : null,
 			timestamp: annotatorState.timeStampEnabled ? currentTimestamp : 0,
 			comment: annotatorState.commentText,
 			userId: "12312asdas",
@@ -52,6 +60,11 @@ const Annotator: React.FC<AnnotatorProps> = ({ currentTimestamp, onAnnotationSub
 		setAnnotatorState((prev) => ({
 			...prev,
 			commentText: "",
+		}));
+		resetAnnotation([]);
+		setDrawConfig((prev) => ({
+			...prev,
+			isCanvasActive: false,
 		}));
 		e.currentTarget.reset();
 	};
@@ -95,9 +108,16 @@ const Annotator: React.FC<AnnotatorProps> = ({ currentTimestamp, onAnnotationSub
 							name={annotatorState.timeStampEnabled ? "checkbox--checked" : "checkbox--unchecked"}
 						/>
 					</div>
-					<button className={styles.annotator__send} disabled={annotatorState.commentText.length > 0 ? false : true}>
-						Send
-					</button>
+					<div className={styles.annotator__footer_left}>
+						<AnnotationControls />
+						<button
+							type="submit"
+							className={styles.annotator__send}
+							disabled={annotatorState.commentText.length > 0 ? false : true}
+						>
+							Send
+						</button>
+					</div>
 				</div>
 			</form>
 		</div>

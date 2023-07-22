@@ -88,3 +88,9 @@
 	cursor: none;
 	pointer-events: none;
 }
+
+.annotator__footer_left {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}

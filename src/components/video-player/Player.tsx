@@ -6,6 +6,9 @@ import { formatTime } from "../../utils";
 import { Annotation } from "../../types";
 import Icon from "../../icons";
 import AnnotationList from "./components/AnnotationList";
+import AnnotationCanvas from "./components/AnnotationCanvas";
+import { useSetAtom } from "jotai";
+import { DrawAnnotation } from "../../context/CanvasDrawContext";
 
 interface PlayerProps {
 	src: string;
@@ -28,6 +31,11 @@ interface VideoPlayer {
 	loop: boolean;
 }
 
+interface AnnotationCanvasSize {
+	width: number;
+	height: number;
+}
+
 const Player: React.FC<PlayerProps> = ({ src }) => {
 	const playerRef = useRef<HTMLVideoElement>(null);
 	const hoverTimeStampRef = useRef<HTMLDivElement>(null);
@@ -48,7 +56,11 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		bufferedTime: 0,
 		loop: false,
 	});
-
+	const setDataForCanvasDisplay = useSetAtom(DrawAnnotation);
+	const [AnnotationCanvasSize, setAnnotationCanvasSize] = useState<AnnotationCanvasSize>({
+		width: 0,
+		height: 0,
+	});
 	useEffect(() => {
 		if (playerRef.current) {
 			playerRef.current.addEventListener("loadedmetadata", initMetaData);
@@ -79,6 +91,22 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 		};
 	}, []);
 
+	useEffect(() => {
+		const videoResizeObserver = new ResizeObserver((e) => {
+			setAnnotationCanvasSize({
+				width: e[0].contentRect.width,
+				height: e[0].contentRect.height,
+			});
+		});
+		if (playerRef.current) {
+			videoResizeObserver.observe(playerRef.current);
+		}
+
+		return () => {
+			videoResizeObserver.disconnect();
+		};
+	}, [playerRef]);
+
 	const initMetaData = (): void => {
 		if (playerRef.current) {
 			let annotations = JSON.parse(localStorage.getItem("annotations")) || [];
@@ -100,6 +128,7 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				loop: false,
 			});
 			updateBufferProgress();
+			console.log(playerRef.current.width, "player size");
 		}
 	};
 
@@ -144,6 +173,13 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				currentTime: playerState.activeAnnotation.timestamp,
 			}));
 			playerRef.current.currentTime = playerState.activeAnnotation.timestamp;
+			setDataForCanvasDisplay([]);
+			if (playerState.activeAnnotation.annotations != null) {
+				setDataForCanvasDisplay(playerState.activeAnnotation.annotations);
+			}
+		} else {
+			console.log("active annotation unset");
+			setDataForCanvasDisplay([]);
 		}
 	}, [playerState.activeAnnotation]);
 
@@ -432,7 +468,10 @@ const Player: React.FC<PlayerProps> = ({ src }) => {
 				style={!playerState.isReady ? { visibility: "hidden" } : {}}
 			>
 				<div className={styles.video_player__container}>
-					<video className={styles.container_video_player} ref={playerRef} src={src}></video>
+					<div className={styles.video_player__wrapper}>
+						<video className={styles.container_video_player} ref={playerRef} src={src}></video>
+						<AnnotationCanvas width={AnnotationCanvasSize.width} height={AnnotationCanvasSize.height} />
+					</div>
 					<div className={styles.video_player__bottom}>
 						<div className={styles.video_player__bottom_container}>
 							<div className={styles.seek_bars__container}>

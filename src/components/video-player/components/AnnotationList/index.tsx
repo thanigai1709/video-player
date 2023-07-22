@@ -32,7 +32,13 @@ const AnnotationList: React.FC<AnnotationList> = ({ annotations, onSelect, selec
 						<span>{a.userName}</span>
 					</div>
 					<div className={styles.annotationcard__body}>
-						{a.timestamp > 0 && <span className={styles.annotationcard__timestamp}>{formatTime(a.timestamp)}</span>}
+						{a.timestamp > 0 && (
+							<span className={styles.annotationcard__timestamp}>
+								{formatTime(a.timestamp)}
+								{a.annotations != null && <Icon name="pen" width="18px" height="18px" color="#5b53ff" />}
+							</span>
+						)}
+
 						<span className={styles.annotationcard__comment}>{a.comment}</span>
 					</div>
 					<div className={styles.annotationcard__footer}>
